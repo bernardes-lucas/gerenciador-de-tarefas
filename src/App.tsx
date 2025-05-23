@@ -8,10 +8,22 @@ import Title from "./util/components/Title"
 
 function App() {
   const [taskList, setTaskList] = useState<ITask[]>(TaskLocalStorageService.getTasks())
+  const [taskToEdit, setTaskToEdit] = useState<ITask | null>(null)
 
   useEffect(() => {
     TaskLocalStorageService.saveTasks(taskList)
   }, [taskList])
+
+  const onAddTask = (title: string, description: string) => {
+    let newTask: ITask = {
+      id: v4(),
+      title,
+      description,
+      isCompleted: false
+    }
+
+    setTaskList([...taskList, newTask])
+  }
 
   const onFinalizeTask = (taskId: string) => {
     const newTaskList = taskList.map((task) => {
@@ -28,15 +40,20 @@ function App() {
     setTaskList(newTaskList)
   }
 
-  const onAddTask = (title: string, description: string) => {
-    let newTask: ITask = {
-      id: v4(),
-      title,
-      description,
-      isCompleted: false
-    }
+  const prepareToEdit = (task: ITask) => {
+    setTaskToEdit(task)
+  }
 
-    setTaskList([...taskList, newTask])
+  const onEditTask = (taskId: string, title: string, description: string) => {
+    const newTaskList = taskList.map((task) => {
+      if (task.id === taskId) {
+        task.title = title
+        task.description = description
+      }
+      return task
+    })
+
+    setTaskList(newTaskList)
   }
 
   return (
@@ -45,8 +62,8 @@ function App() {
         <Title>
           Gerenciador de tarefas
         </Title>
-        <TaskForm addTask={onAddTask} />
-        <TaskList tasks={taskList} finalizeTask={onFinalizeTask} deleteTask={onDeleteTask}/>
+        <TaskForm addTask={onAddTask} editTask={onEditTask} taskToEdit={taskToEdit} />
+        <TaskList tasks={taskList} finalizeTask={onFinalizeTask} deleteTask={onDeleteTask} prepareToEdit={prepareToEdit}/>
       </div>
     </div>
   )

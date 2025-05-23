@@ -1,12 +1,22 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import type { ITaskFormProps } from "../props/TaskForm.props"
 import Input from "../util/components/Input"
 
 function TaskForm(props: ITaskFormProps) {
-  const { addTask } = props
+  const { addTask, editTask, taskToEdit } = props
 
   const [title, setTitle] = useState<string>('')
   const [description, setDescription] = useState<string>('')
+
+  useEffect(() => {
+    if (taskToEdit) {
+      setTitle(taskToEdit.title)
+      setDescription(taskToEdit.description)
+    } else {
+      setTitle('')
+      setDescription('')
+    }
+  }, [taskToEdit])
 
   const onAddTask = (title: string, description: string) => {
     if(!title.trim() || !description.trim()) return alert('Preencha todos os campos')
@@ -14,6 +24,15 @@ function TaskForm(props: ITaskFormProps) {
     addTask(title, description)
     setTitle('')
     setDescription('')
+  }
+
+  const onSaveEdition = (title: string, description: string) => {
+    if(!title.trim() ||!description.trim()) return alert('Preencha todos os campos')
+
+    setTitle('')
+    setDescription('')
+
+    editTask(taskToEdit!.id, title, description)
   }
 
   return (
@@ -30,12 +49,22 @@ function TaskForm(props: ITaskFormProps) {
         value={description}
         onChange={(ev) => setDescription(ev.target.value)}>
       </Input>
-			<button 
-        className="bg-slate-500 text-white px-4 py-2 rounded-md"
-        onClick={() => onAddTask(title, description)}
-      >
-				Adicionar
-			</button>
+      {taskToEdit == null && (
+        <button 
+          className="bg-slate-500 text-white px-4 py-2 rounded-md"
+          onClick={() => onAddTask(title, description)}
+        >
+          Adicionar
+        </button>
+      )}
+			{taskToEdit && (
+        <button 
+          className="bg-slate-500 text-white px-4 py-2 rounded-md"
+          onClick={() => onSaveEdition(title, description)}
+        >
+          Salvar alteração
+        </button>
+      )}
     </div>
   )
 }

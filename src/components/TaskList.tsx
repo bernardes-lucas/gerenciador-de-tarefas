@@ -1,4 +1,4 @@
-import { ChevronRightIcon, TrashIcon } from "lucide-react"
+import { ChevronRightIcon, Pencil, TrashIcon } from "lucide-react"
 import type { ITask } from "../models/ITask"
 import type { ITaskListProps } from "../props/TaskList.props"
 import { useNavigate } from "react-router-dom"
@@ -6,7 +6,7 @@ import Empty from "../util/components/Empty"
 import Button from "../util/components/Button"
 
 function TaskList(props: ITaskListProps) {
-	const { tasks, finalizeTask, deleteTask } = props
+	const { tasks, finalizeTask, deleteTask, prepareToEdit } = props
 	const navigate = useNavigate()
 
 	const onSeeDetails = (title: string, description: string) => {
@@ -47,6 +47,11 @@ function TaskList(props: ITaskListProps) {
 							onClick={() => deleteTask(task.id)}
 						>
 							<TrashIcon />
+						</Button>
+						<Button
+							onClick={() => prepareToEdit(task)}
+						>
+							<Pencil />
 						</Button>
 					</li>
 				))}
